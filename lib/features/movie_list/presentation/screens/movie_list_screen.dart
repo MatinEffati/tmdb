@@ -15,25 +15,24 @@ class MovieListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Popular Movies")),
-      body: BlocBuilder<MovieListBloc, MovieListState>(
-        builder: (context, state) {
-          if (state is MovieListLoading) {
-            return MovieListLoadingWidget();
-          } else if (state is MovieListLoaded) {
-            return MovieListLoadedWidget(movies: state.movies);
-          } else if (state is MovieListError) {
-            return MovieListErrorWidget(message: state.message);
-          } else if (state is MovieListEmpty) {
-            return MovieListEmptyWidget();
-          }
-          return const Center(child: Text("Press button to load movies"));
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
+      body: RefreshIndicator(
+        onRefresh: () async {
           context.read<MovieListBloc>().add(FetchPopularMovies());
         },
-        child: const Icon(Icons.refresh),
+        child: BlocBuilder<MovieListBloc, MovieListState>(
+          builder: (context, state) {
+            if (state is MovieListLoading) {
+              return MovieListLoadingWidget();
+            } else if (state is MovieListLoaded) {
+              return MovieListLoadedWidget(movies: state.movies);
+            } else if (state is MovieListError) {
+              return MovieListErrorWidget(message: state.message);
+            } else if (state is MovieListEmpty) {
+              return MovieListEmptyWidget();
+            }
+            return const Center(child: Text("Press button to load movies"));
+          },
+        ),
       ),
     );
   }
@@ -56,6 +55,7 @@ class MovieListLoadedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: BouncingScrollPhysics(),
       itemCount: movies.length,
       itemBuilder: (context, index) {
         final movie = movies[index];
