@@ -7,15 +7,13 @@ class ErrorHandler {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return TimeoutException("Request timed out");
+      case DioExceptionType.connectionError:
+        return NetworkException("No Internet Connection.");
 
       case DioExceptionType.badResponse:
         final res = error.response;
         if (res != null) return fromResponse(res);
         return ServerException(error.message ?? "Bad response");
-
-      case DioExceptionType.connectionError:
-        return NetworkException("Network error: ${error.message}");
 
       case DioExceptionType.badCertificate:
         return ServerException("Bad certificate");

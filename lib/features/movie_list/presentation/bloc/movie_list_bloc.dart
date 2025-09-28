@@ -14,7 +14,13 @@ class MovieListBloc extends Bloc<MovieListEvent, MovieListState> {
     on<FetchPopularMovies>((event, emit) async {
       emit(MovieListLoading());
       final result = await getPopularMovies(NoParams());
-      result.fold((failure) => emit(MovieListError(failure.message)), (movies) => emit(MovieListLoaded(movies)));
+      result.fold((failure) => emit(MovieListError(failure.message)), (movies) {
+        if (movies.isNotEmpty) {
+          emit(MovieListLoaded(movies));
+        } else {
+          emit(MovieListEmpty());
+        }
+      });
     });
   }
 }

@@ -10,7 +10,7 @@ final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // Network
-  sl.registerLazySingleton<NetworkClient>(() => NetworkClient(dio: Dio()));
+  sl.registerLazySingleton<NetworkClient>(() => NetworkClient());
 
   // Data sources
   sl.registerLazySingleton<MovieRemoteDataSource>(() => MovieRemoteDataSourceImpl(sl()));

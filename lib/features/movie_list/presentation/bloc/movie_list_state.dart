@@ -6,6 +6,8 @@ class MovieListInitial extends MovieListState {}
 
 class MovieListLoading extends MovieListState {}
 
+class MovieListEmpty extends MovieListState {}
+
 class MovieListLoaded extends MovieListState {
   final List<Movie> movies;
 
