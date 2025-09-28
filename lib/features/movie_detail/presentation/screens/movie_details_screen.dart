@@ -1,5 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:tmdb/core/components/big_error_widget.dart';
+import 'package:tmdb/core/components/cached_image.dart';
 import 'package:tmdb/features/movie_detail/presentation/bloc/movie_detail_bloc.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
@@ -16,35 +20,41 @@ class MovieDetailsScreen extends StatelessWidget {
           if (state is MovieDetailsLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is MovieDetailsError) {
-            return Center(child: Text(state.message));
+            return Center(
+              child: LargeErrorContainer(
+                onPressed: () {
+                  context.read<MovieDetailsBloc>().add(FetchMovieDetailsEvent(movieId));
+                },
+                title: state.message,
+                svgThumbnail: 'assets/lottie/connection_error.json',
+                activeLargeButton: true,
+                titleActionButton: 'Try again',
+              ),
+            );
           } else if (state is MovieDetailsLoaded) {
             final movie = state.movie;
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.network("https://image.tmdb.org/t/p/w500${movie.backdropPath}"),
+                  CachedImage(
+                    imageUrl: "https://image.tmdb.org/t/p/w500${movie.backdropPath}",
+                    width: double.infinity,
+                    height: 220,
+                    fit: BoxFit.cover,
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      movie.title,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
+                    child: Text(movie.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("⭐ ${movie.voteAverage} | Runtime: ${movie.runtime} mins"),
+                    child: Text("⭐ ${movie.voteAverage.toStringAsFixed(1)} | Runtime: ${movie.runtime} mins"),
                   ),
+                  Padding(padding: const EdgeInsets.all(8.0), child: Text(movie.overview)),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(movie.overview),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      spacing: 8,
-                      children: movie.genres.map((g) => Chip(label: Text(g))).toList(),
-                    ),
+                    child: Wrap(spacing: 8, children: movie.genres.map((g) => Chip(label: Text(g))).toList()),
                   ),
                 ],
               ),

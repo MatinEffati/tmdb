@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tmdb/core/components/big_error_widget.dart';
+import 'package:tmdb/core/components/cached_image.dart';
 import 'package:tmdb/core/di/service_locator.dart';
 import 'package:tmdb/features/movie_detail/presentation/bloc/movie_detail_bloc.dart';
 import 'package:tmdb/features/movie_detail/presentation/screens/movie_details_screen.dart';
@@ -68,9 +69,14 @@ class MovieListLoadedWidget extends StatelessWidget {
               ),
             ),
           ),
-          leading: Image.network("https://image.tmdb.org/t/p/w200${movie.posterPath}", width: 50),
+          leading: CachedImage(
+            imageUrl: "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+            width: 50,
+            height: 100,
+            borderRadius: BorderRadius.circular(4),
+          ),
           title: Text(movie.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text("⭐ ${movie.voteAverage}"),
+          subtitle: Text("⭐ ${movie.voteAverage.toStringAsFixed(1)}"),
           trailing: Icon(Icons.favorite_border),
         );
       },
