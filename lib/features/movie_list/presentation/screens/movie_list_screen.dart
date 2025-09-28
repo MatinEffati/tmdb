@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tmdb/core/components/big_error_widget.dart';
+import 'package:tmdb/core/di/service_locator.dart';
+import 'package:tmdb/features/movie_detail/presentation/bloc/movie_detail_bloc.dart';
 import 'package:tmdb/features/movie_detail/presentation/screens/movie_details_screen.dart';
 import 'package:tmdb/features/movie_list/domain/entities/movie_entity.dart';
 import '../bloc/movie_list_bloc.dart';
@@ -57,8 +59,15 @@ class MovieListLoadedWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final movie = movies[index];
         return ListTile(
-          onTap: () =>
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MovieDetailsScreen(movieId: movie.id))),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                create: (_) => MovieDetailsBloc(getMovieDetails: sl())..add(FetchMovieDetailsEvent(movie.id)),
+                child: MovieDetailsScreen(movieId: movie.id),
+              ),
+            ),
+          ),
           leading: Image.network("https://image.tmdb.org/t/p/w200${movie.posterPath}", width: 50),
           title: Text(movie.title, maxLines: 1, overflow: TextOverflow.ellipsis),
           subtitle: Text("⭐ ${movie.voteAverage}"),

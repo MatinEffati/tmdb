@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tmdb/core/network/network_client.dart';
+import 'package:tmdb/features/movie_detail/data/datasources/movie_details_remote_data_source.dart';
+import 'package:tmdb/features/movie_detail/data/repositories/movie_detail_repository.dart';
+import 'package:tmdb/features/movie_detail/domain/repositories/movie_details_repository.dart';
+import 'package:tmdb/features/movie_detail/domain/usecases/get_movie_details.dart';
 import 'package:tmdb/features/movie_list/data/datasources/movie_remote_data_source.dart';
 import 'package:tmdb/features/movie_list/data/repositories/movie_repository.dart';
 import 'package:tmdb/features/movie_list/domain/repositories/movie_repository.dart';
@@ -14,10 +18,13 @@ Future<void> initDependencies() async {
 
   // Data sources
   sl.registerLazySingleton<MovieRemoteDataSource>(() => MovieRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<MovieDetailRemoteDataSource>(() => MovieDetailRemoteDataSourceImpl(sl()));
 
   // Repository
   sl.registerLazySingleton<MovieRepository>(() => MovieRepositoryImpl(sl()));
+  sl.registerLazySingleton<MovieDetailsRepository>(() => MovieDetailRepositoryImpl(sl()));
 
   // Use cases
   sl.registerLazySingleton<GetPopularMovies>(() => GetPopularMovies(sl()));
+  sl.registerLazySingleton<GetMovieDetails>(() => GetMovieDetails(sl()));
 }
