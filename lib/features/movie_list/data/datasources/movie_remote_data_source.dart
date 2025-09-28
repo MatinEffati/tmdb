@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:tmdb/core/network/network_client.dart';
 import '../models/movie_model.dart';
 
