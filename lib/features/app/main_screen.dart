@@ -16,16 +16,32 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    BlocProvider(create: (_) => MovieListBloc(sl())..add(FetchPopularMovies()), child: const MovieListScreen()),
-    const Scaffold(),
-    const FavoritesScreen(),
-  ];
+  late final MovieListBloc _movieListBloc;
+
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _movieListBloc = MovieListBloc(sl())..add(FetchPopularMovies());
+
+    _pages = [
+      BlocProvider.value(value: _movieListBloc, child: const MovieListScreen()),
+      const Scaffold(),
+      const FavoritesScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void dispose() {
+    _movieListBloc.close();
+    super.dispose();
   }
 
   @override

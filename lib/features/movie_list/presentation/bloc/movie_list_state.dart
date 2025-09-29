@@ -6,13 +6,14 @@ class MovieListInitial extends MovieListState {}
 
 class MovieListLoading extends MovieListState {}
 
-class MovieListEmpty extends MovieListState {}
-
 class MovieListLoaded extends MovieListState {
   final List<Movie> movies;
+  final Set<int> favoriteIds;
 
-  MovieListLoaded(this.movies);
+  MovieListLoaded(this.movies, {Set<int>? favoriteIds}) : favoriteIds = favoriteIds ?? {};
 }
+
+class MovieListEmpty extends MovieListState {}
 
 class MovieListError extends MovieListState {
   final String message;

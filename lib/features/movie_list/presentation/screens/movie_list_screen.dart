@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tmdb/core/components/big_error_widget.dart';
 import 'package:tmdb/core/components/cached_image.dart';
 import 'package:tmdb/core/di/service_locator.dart';
+import 'package:tmdb/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:tmdb/features/movie_detail/presentation/bloc/movie_detail_bloc.dart';
 import 'package:tmdb/features/movie_detail/presentation/screens/movie_details_screen.dart';
 import 'package:tmdb/features/movie_list/domain/entities/movie_entity.dart';
@@ -24,7 +25,9 @@ class MovieListScreen extends StatelessWidget {
             if (state is MovieListLoading) {
               return MovieListLoadingWidget();
             } else if (state is MovieListLoaded) {
-              return MovieListLoadedWidget(movies: state.movies);
+              return MovieListLoadedWidget(
+                movies: state.movies,
+              );
             } else if (state is MovieListError) {
               return MovieListErrorWidget(message: state.message);
             } else if (state is MovieListEmpty) {
@@ -54,30 +57,58 @@ class MovieListLoadedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: movies.length,
-      itemBuilder: (context, index) {
-        final movie = movies[index];
-        return ListTile(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                create: (_) => MovieDetailsBloc(getMovieDetails: sl())..add(FetchMovieDetailsEvent(movie.id)),
-                child: MovieDetailsScreen(movieId: movie.id),
+    return BlocBuilder<FavoritesBloc, FavoritesState>(
+      builder: (context, state) {
+        final favIds = state is FavoritesLoaded
+            ? state.movies.map((m) => m.id).toSet()
+            : <int>{};
+
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          itemCount: movies.length,
+          itemBuilder: (context, index) {
+            final movie = movies[index];
+            final isFavorite = favIds.contains(movie.id);
+
+            return ListTile(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (_) => MovieDetailsBloc(getMovieDetails: sl())
+                      ..add(FetchMovieDetailsEvent(movie.id)),
+                    child: MovieDetailsScreen(movieId: movie.id),
+                  ),
+                ),
               ),
-            ),
-          ),
-          leading: CachedImage(
-            imageUrl: "https://image.tmdb.org/t/p/w200${movie.posterPath}",
-            width: 50,
-            height: 100,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          title: Text(movie.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text("⭐ ${movie.voteAverage.toStringAsFixed(1)}"),
-          trailing: Icon(Icons.favorite_border),
+              leading: CachedImage(
+                imageUrl: "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+                width: 50,
+                height: 100,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              title: Text(
+                movie.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text("⭐ ${movie.voteAverage.toStringAsFixed(1)}"),
+              trailing: IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onPressed: () {
+                  final favoritesBloc = context.read<FavoritesBloc>();
+                  if (isFavorite) {
+                    favoritesBloc.add(RemoveFavoriteEvent(movie.id));
+                  } else {
+                    favoritesBloc.add(AddFavoriteEvent(movie));
+                  }
+                },
+              ),
+            );
+          },
         );
       },
     );

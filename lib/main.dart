@@ -5,6 +5,7 @@ import 'package:tmdb/features/app/main_screen.dart';
 import 'package:tmdb/features/movie_list/presentation/screens/movie_list_screen.dart';
 
 import 'core/di/service_locator.dart';
+import 'features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'features/movie_list/data/models/movie_model.dart';
 import 'features/movie_list/presentation/bloc/movie_list_bloc.dart';
 
@@ -25,7 +26,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'TMDB',
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
-      home: MainPage()
+      home: BlocProvider(
+        create: (_) =>
+            FavoritesBloc(getFavorites: sl(), addToFavorites: sl(), removeFavorite: sl(), checkFavorite: sl())
+              ..add(LoadFavoritesEvent()),
+        child: MainPage(),
+      ),
     );
   }
 }
