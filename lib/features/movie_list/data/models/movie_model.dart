@@ -1,4 +1,3 @@
-
 import 'package:tmdb/features/movie_list/domain/entities/movie_entity.dart';
 
 import 'package:hive/hive.dart';
@@ -33,20 +32,14 @@ class MovieModel extends Movie {
     required this.posterPath,
     required this.voteAverage,
     required this.overview,
-  }) : super(
-    id: id,
-    title: title,
-    posterPath: posterPath,
-    voteAverage: voteAverage,
-    overview: overview,
-  );
+  }) : super(id: id, title: title, posterPath: posterPath, voteAverage: voteAverage, overview: overview);
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
       id: json['id'],
       title: json['title'] ?? '',
       posterPath: json['poster_path'] ?? '',
-      voteAverage: (json['vote_average'] as num).toDouble(),
+      voteAverage: (json['vote_average'] ?? 00).toDouble(),
       overview: json['overview'] ?? '',
     );
   }
@@ -59,4 +52,3 @@ class MovieModel extends Movie {
     overview: movie.overview,
   );
 }
-

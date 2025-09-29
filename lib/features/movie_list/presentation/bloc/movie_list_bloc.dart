@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:tmdb/core/usecases/no_params.dart';
 import 'package:tmdb/features/movie_list/domain/entities/movie_entity.dart';
 import 'package:tmdb/features/movie_list/domain/usecases/get_popular_movies.dart';
