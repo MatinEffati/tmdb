@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tmdb/core/network/network_client.dart';
 import 'package:tmdb/features/favorites/data/datasources/favorites_local_data_source.dart';
@@ -16,6 +15,10 @@ import 'package:tmdb/features/movie_list/data/datasources/movie_remote_data_sour
 import 'package:tmdb/features/movie_list/data/repositories/movie_repository.dart';
 import 'package:tmdb/features/movie_list/domain/repositories/movie_repository.dart';
 import 'package:tmdb/features/movie_list/domain/usecases/get_popular_movies.dart';
+import 'package:tmdb/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:tmdb/features/search/data/repositories/search_repository.dart';
+import 'package:tmdb/features/search/domain/repositories/search_repository.dart';
+import 'package:tmdb/features/search/domain/usecases/search_movies.dart';
 
 final sl = GetIt.instance;
 
@@ -27,11 +30,13 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<MovieRemoteDataSource>(() => MovieRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<MovieDetailRemoteDataSource>(() => MovieDetailRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<FavoritesLocalDataSource>(() => FavoritesLocalDataSourceImpl());
+  sl.registerLazySingleton<SearchRemoteDataSource>(() => SearchRemoteDataSourceImpl(sl()));
 
   // Repository
   sl.registerLazySingleton<MovieRepository>(() => MovieRepositoryImpl(sl()));
   sl.registerLazySingleton<MovieDetailsRepository>(() => MovieDetailRepositoryImpl(sl()));
   sl.registerLazySingleton<FavoritesRepository>(() => FavoritesRepositoryImpl(sl()));
+  sl.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton<GetPopularMovies>(() => GetPopularMovies(sl()));
@@ -40,4 +45,5 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<GetFavorites>(() => GetFavorites(sl()));
   sl.registerLazySingleton<CheckFavorite>(() => CheckFavorite(sl()));
   sl.registerLazySingleton<RemoveFromFavorites>(() => RemoveFromFavorites(sl()));
+  sl.registerLazySingleton<SearchMovies>(() => SearchMovies(sl()));
 }

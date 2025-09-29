@@ -5,6 +5,8 @@ import 'package:tmdb/core/di/service_locator.dart';
 import 'package:tmdb/features/favorites/presentation/screens/favorites_screen.dart';
 import 'package:tmdb/features/movie_list/presentation/bloc/movie_list_bloc.dart';
 import 'package:tmdb/features/movie_list/presentation/screens/movie_list_screen.dart';
+import 'package:tmdb/features/search/presentation/bloc/search_bloc.dart';
+import 'package:tmdb/features/search/presentation/screens/search_screen.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -27,7 +29,7 @@ class _MainPageState extends State<MainPage> {
 
     _pages = [
       BlocProvider.value(value: _movieListBloc, child: const MovieListScreen()),
-      const Scaffold(),
+      BlocProvider(create: (context) => SearchBloc(sl()),child: const SearchScreen(),),
       const FavoritesScreen(),
     ];
   }
